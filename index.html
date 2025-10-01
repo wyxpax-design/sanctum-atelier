@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Sanctum Atelier</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body { background:#0a0a0a; color:#e5e5e5; font-family:'Cinzel', serif; margin:0; padding:0; }
+    header { background:#0f0f0f; padding:20px; text-align:center; border-bottom:2px solid #444; }
+    header img { max-height:120px; display:block; margin:0 auto; }
+    .container { display:flex; flex-wrap:wrap; justify-content:center; padding:40px 20px; }
+    .card { background:#121212; border:1px solid #444; border-radius:12px; margin:20px; padding:20px; width:240px; transition:transform 0.3s, box-shadow 0.3s; }
+    .card:hover { transform:scale(1.05); border-color:#800000; box-shadow:0 0 20px rgba(128,0,0,0.5); }
+    .card h3 { margin:10px 0; color:#c0c0c0; text-transform:uppercase; font-size:18px; text-align:center; }
+    .price { color:#800000; font-weight:bold; margin:10px 0; text-align:center; }
+    label { font-size:12px; color:#aaa; }
+    select, button { width:100%; margin:8px 0; padding:10px; background:#1a1a1a; color:#e5e5e5; border:1px solid #444; border-radius:6px; font-size:14px; }
+    button { cursor:pointer; background:#800000; border:none; font-weight:bold; letter-spacing:1px; transition:background 0.3s; }
+    button:hover { background:#a00000; }
+  </style>
+</head>
+<body>
+  <header><img src="logo.png" alt="Sanctum Atelier Logo"></header>
+  <div class="container">
+    <div class="card">
+      <h3>Обувь</h3><div class="price">120$</div>
+      <label>Размер:</label><select id="shoes-size"><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option></select>
+      <label>Цвет:</label><select id="shoes-color"><option>Чёрный</option><option>Красный</option><option>Фиолетовый</option><option>Серый</option></select>
+      <button onclick="buy('Обувь','120$','shoes')">Купить</button>
+    </div>
+    <div class="card">
+      <h3>Верхняя одежда</h3><div class="price">90$</div>
+      <label>Размер:</label><select id="top-size"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+      <label>Цвет:</label><select id="top-color"><option>Чёрный</option><option>Красный</option><option>Фиолетовый</option><option>Белый</option></select>
+      <button onclick="buy('Верхняя одежда','90$','top')">Купить</button>
+    </div>
+    <div class="card">
+      <h3>Аксессуары</h3><div class="price">30$</div>
+      <label>Цвет:</label><select id="acc-color"><option>Чёрный</option><option>Серебро</option><option>Красный</option><option>Фиолетовый</option></select>
+      <button onclick="buy('Аксессуары','30$','acc')">Купить</button>
+    </div>
+    <div class="card">
+      <h3>Брюки</h3><div class="price">70$</div>
+      <label>Размер:</label><select id="pants-size"><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+      <label>Цвет:</label><select id="pants-color"><option>Чёрный</option><option>Красный</option><option>Фиолетовый</option><option>Серый</option></select>
+      <button onclick="buy('Брюки','70$','pants')">Купить</button>
+    </div>
+  </div>
+  <script>
+    let tg = window.Telegram.WebApp; tg.expand();
+    function buy(item, price, id) {
+      let size = document.getElementById(id + "-size")?.value || "-";
+      let color = document.getElementById(id + "-color")?.value || "-";
+      let order = { товар: item, цена: price, размер: size, цвет: color };
+      tg.sendData(JSON.stringify(order));
+      alert("🛒 Заказ: " + item + " | " + size + " | " + color + " | " + price);
+    }
+  </script>
+</body>
+</html>

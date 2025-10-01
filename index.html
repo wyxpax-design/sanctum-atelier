@@ -1,81 +1,81 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Sanctum Atelier Miniapp</title>
-<style>
-  /* Главный экран */
-  #main-screen {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background: url('https://cdn.myportfolio.com/4309e257-d837-47d4-9f46-4755a4373dff/b5e4a249-a512-4e1a-b82d-58d22fe33a42') no-repeat center/cover;
-    overflow: hidden;
-  }
+  <meta charset="UTF-8">
+  <title>Sanctum Atelier Miniapp</title>
+  <style>
+    /* Главный экран */
+    #main-screen {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url('https://cdn.myportfolio.com/4309e257-d837-47d4-9f46-4755a4373dff/b5e4a249-a512-4e1a-b82d-58d22fe33a42') no-repeat center/cover;
+      overflow: hidden;
+    }
 
-  /* Панель */
-  #side-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 250px;
-    height: 100vh;
-    background: rgba(0,0,0,0.9);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.5);
-    z-index: 1000;
-  }
+    /* Панель */
+    #side-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
 
-  /* Кнопки панели */
-  .panel-btn {
-    font-family: 'Gothic A1', sans-serif;
-    font-size: 18px;
-    color: #fff;
-    background: rgba(50,0,50,0.75);
-    border: 2px solid #8a2be2;
-    border-radius: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-  }
-  .panel-btn:hover {
-    transform: scale(1.05);
-    background: rgba(70,0,70,0.85);
-  }
+    /* Кнопки панели */
+    .panel-btn {
+      font-family: 'Gothic A1', sans-serif;
+      font-size: 18px;
+      color: #fff;
+      background: rgba(50,0,50,0.75);
+      border: 2px solid #8a2be2;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .panel-btn:hover {
+      transform: scale(1.05);
+      background: rgba(70,0,70,0.85);
+    }
 
-  /* Элементы на главном экране */
-  .main-item {
-    position: absolute;
-    color: #fff;
-    font-family: 'Gothic A1', sans-serif;
-    font-size: 28px;
-    width: 180px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: rgba(50,0,50,0.7);
-    border: 3px solid #8a2be2;
-    border-radius: 15px;
-    padding: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    pointer-events: none;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.6s ease;
-  }
+    /* Элементы на главном экране */
+    .main-item {
+      position: absolute;
+      color: #fff;
+      font-family: 'Gothic A1', sans-serif;
+      font-size: 28px;
+      width: 180px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: rgba(50,0,50,0.7);
+      border: 3px solid #8a2be2;
+      border-radius: 15px;
+      padding: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.6s ease;
+    }
 
-  /* Если нужно добавить картинки внутрь элемента */
-  .main-item img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 10px;
-  }
-</style>
+    /* Если нужно добавить картинки внутрь элемента */
+    .main-item img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
 

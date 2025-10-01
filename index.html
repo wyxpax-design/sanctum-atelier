@@ -1,307 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sanctum Atelier — Mini App (visual v6 - fixed)</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<title>Sanctum Atelier Miniapp</title>
+<style>
+  /* Главный экран */
+  #main-screen {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: url('https://cdn.myportfolio.com/4309e257-d837-47d4-9f46-4755a4373dff/b5e4a249-a512-4e1a-b82d-58d22fe33a42') no-repeat center/cover;
+    overflow: hidden;
+  }
 
-  <style>
-    :root{
-      --bg-overlay: rgba(6,6,6,0.6);
-      --panel-light: rgba(60,60,60,0.70);
-      --muted: #b0b0b0;
-      --metal-color: #e0e0e0;
-      --accent: #8b0000;
-      --transition: 280ms;
-    }
+  /* Панель */
+  #side-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 220px;
+    height: 100vh;
+    background: rgba(0,0,0,0.85);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
 
-    html,body{height:100%;margin:0}
-    body{
-      font-family: "GourdieGothic", serif;
-      color:var(--metal-color);
-      background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.65)), url('https://images.steamusercontent.com/ugc/2047504029549595446/F88A9137C604E876E33716F96971DA0EC97E79F1/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true') center/cover fixed no-repeat;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+  /* Кнопки панели */
+  .panel-btn {
+    font-family: 'Gothic A1', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    background: rgba(50,0,50,0.7);
+    border: 2px solid #8a2be2;
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .panel-btn:hover {
+    transform: scale(1.05);
+    background: rgba(70,0,70,0.85);
+  }
 
-    /* load custom font if available */
-    @font-face{
-      font-family: 'GourdieGothic';
-      src: url('GourdieGothic.ttf') format('truetype');
-      font-weight:700; font-style:normal; font-display:swap;
-    }
-
-    .container{max-width:1100px;margin:0 auto;padding:18px}
-
-    /* header */
-    header.site-header{display:flex;align-items:center;padding:12px 18px;background:var(--bg-overlay);position:sticky;top:0;z-index:120}
-    .hamburger{width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .hamburger span{display:block;width:20px;height:2px;background:var(--metal-color);margin:3px 0;border-radius:2px}
-    .brand{display:flex;align-items:center;gap:10px;margin-left:10px}
-    .brand img{height:48px}
-
-    /* side panel */
-    .side-panel{position:fixed;left:0;top:0;width:300px;height:100%;background:rgba(18,18,18,0.98);padding:20px;transform:translateX(-110%);transition:transform .32s ease;z-index:220;border-right:1px solid rgba(255,255,255,0.03)}
-    .side-panel.open{transform:translateX(0)}
-    .side-panel .back-btn{display:inline-block;margin-bottom:12px;padding:8px 10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--metal-color);cursor:pointer}
-    .side-panel a{display:block;padding:10px 0;color:var(--metal-color);cursor:pointer;text-decoration:none}
-    .side-panel a:hover{color:#fff}
-
-    .hero{text-align:center;padding:36px 20px}
-    .hero h1{font-size:34px;margin:0;color:var(--metal-color)}
-    .hero p{color:var(--muted);max-width:760px;margin:10px auto}
-
-    /* categories */
-    .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:30px}
-    .cat{background:var(--panel-light);padding:20px;border-radius:12px;text-align:center;cursor:pointer;transition:transform .3s, box-shadow .3s}
-    .cat:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-    .cat h3{margin:10px 0;font-size:20px;color:var(--metal-color)}
-    .cat button{margin-top:10px;padding:8px 14px;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer}
-
-    /* products */
-    .products{display:none;margin-top:20px}
-    .products .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-    .prod{background:var(--panel-light);padding:16px;border-radius:10px;transition:transform .3s}
-    .prod:hover{transform:translateY(-5px)}
-    .prod h4{margin:8px 0;color:var(--metal-color)}
-    .prod .price{color:var(--accent);margin:8px 0}
-    .prod button{margin:4px;padding:8px 10px;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer}
-
-    /* product screen */
-    .product-screen{display:none;padding:20px;margin-top:20px;background:rgba(32,32,32,0.88);border-radius:12px}
-    .product-screen h2{margin:0;color:var(--metal-color)}
-    .product-screen .meta{color:var(--muted);margin-top:8px}
-    .product-screen .actions{margin-top:12px}
-    .product-screen button{margin-right:8px;padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
-
-    /* hidden sections (placeholders) */
-    section.hidden-section{display:none;padding:18px;margin-top:18px;background:rgba(24,24,24,0.85);border-radius:10px}
-
-    /* cart panel */
-    .cart-panel{display:none;position:fixed;right:20px;bottom:20px;width:360px;max-width:92%;background:rgba(20,20,20,0.98);padding:16px;border-radius:12px;z-index:300}
-    .cart-item{display:flex;justify-content:space-between;margin:8px 0;color:var(--metal-color)}
-    .cart-panel button{margin-top:10px;padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer}
-
-    /* small screens */
-    @media(max-width:720px){.side-panel{width:86vw}}
-  </style>
+  /* Элементы на главном экране */
+  .main-item {
+    position: absolute;
+    color: #fff;
+    font-family: 'Gothic A1', sans-serif;
+    font-size: 20px;
+    background: rgba(50,0,50,0.6);
+    border: 2px solid #8a2be2;
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.6s ease;
+  }
+</style>
 </head>
 <body>
 
-<!-- Side panel (slide-out) -->
-<div id="sidePanel" class="side-panel" aria-hidden="true">
-  <button class="back-btn" onclick="togglePanel()">Назад</button>
-  <a onclick="navigateTo('categories')">Каталог</a>
-  <a onclick="navigateTo('about')">О бренде</a>
-  <a href="https://instagram.com/" target="_blank">Instagram</a>
-  <a href="https://t.me/" target="_blank">Telegram</a>
-  <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:12px 0">
-  <a onclick="navigateTo('profile')">Профиль</a>
-  <a onclick="navigateTo('branches')">Филиалы</a>
-  <a onclick="navigateTo('contacts')">Контакты</a>
-  <a onclick="navigateTo('settings')">Параметры</a>
+<!-- Главный экран -->
+<div id="main-screen"></div>
+
+<!-- Выдвижная панель -->
+<div id="side-panel">
+  <button class="panel-btn" data-content="Элемент 1">Элемент 1</button>
+  <button class="panel-btn" data-content="Элемент 2">Элемент 2</button>
+  <button class="panel-btn" data-content="Элемент 3">Элемент 3</button>
+  <button class="panel-btn" data-content="Элемент 4">Элемент 4</button>
+  <button class="panel-btn" data-content="Элемент 5">Элемент 5</button>
 </div>
 
-<header class="site-header container">
-  <div class="hamburger" id="hamburger" onclick="togglePanel()" aria-label="Меню">
-    <span></span><span></span><span></span>
-  </div>
-  <div class="brand">
-    <img src="logo.png" alt="Sanctum Atelier logo"/>
-  </div>
-</header>
-
-<main class="container">
-  <!-- Hero -->
-  <section id="hero" class="hero">
-    <h1>Sanctum Atelier — Dark luxury</h1>
-    <p>Коллекция обуви, верхней одежды, аксессуаров и брюк — строгие силуэты, готическая эстетика и качественные материалы.</p>
-  </section>
-
-  <!-- Categories -->
-  <section id="categories" class="categories">
-    <div class="cat" onclick="openCategory('shoes')"><h3>Обувь</h3><button>Открыть</button></div>
-    <div class="cat" onclick="openCategory('tops')"><h3>Верхняя одежда</h3><button>Открыть</button></div>
-    <div class="cat" onclick="openCategory('accessories')"><h3>Аксессуары</h3><button>Открыть</button></div>
-    <div class="cat" onclick="openCategory('pants')"><h3>Брюки</h3><button>Открыть</button></div>
-  </section>
-
-  <!-- Products list -->
-  <section id="products" class="products" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h2 id="products-title">Категория</h2>
-    <div class="list" id="products-list"></div>
-    <div style="margin-top:12px"><button onclick="showCart()">Открыть корзину</button></div>
-  </section>
-
-  <!-- Product detail screen -->
-  <section id="productScreen" class="product-screen" aria-hidden="true">
-    <button onclick="navigateTo('products')">Назад</button>
-    <h2 id="ps-title">Название</h2>
-    <div class="meta" id="ps-desc">Описание</div>
-    <div id="ps-price" style="margin-top:10px;color:var(--accent)"></div>
-    <div class="actions">
-      <button id="ps-add">Добавить в корзину</button>
-      <button onclick="navigateTo('products')">Назад</button>
-    </div>
-  </section>
-
-  <!-- ABOUT / PROFILE / BRANCHES / CONTACTS / SETTINGS placeholders -->
-  <section id="about" class="hidden-section" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h3>О бренде</h3>
-    <p class="meta">Sanctum Atelier — независимый бренд... (краткое описание). Возвращайтесь к каталогу через кнопку «Назад».</p>
-  </section>
-
-  <section id="profile" class="hidden-section" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h3>Профиль</h3>
-    <p class="meta">Здесь будет профиль пользователя (заглушка).</p>
-  </section>
-
-  <section id="branches" class="hidden-section" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h3>Филиалы</h3>
-    <p class="meta">Адреса и график работы.</p>
-  </section>
-
-  <section id="contacts" class="hidden-section" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h3>Контакты</h3>
-    <p class="meta">Email: info@sanctumatelier.example<br/>Телефон: +123 456 7890</p>
-  </section>
-
-  <section id="settings" class="hidden-section" aria-hidden="true">
-    <button onclick="navigateTo('categories')">Назад</button>
-    <h3>Параметры</h3>
-    <p class="meta">Язык, уведомления и настройки.</p>
-  </section>
-
-  <!-- Cart panel (hidden until opened) -->
-  <div id="cartPanel" class="cart-panel" aria-hidden="true">
-    <button onclick="closeCart()">Назад</button>
-    <h3>Корзина</h3>
-    <div id="cartItems"></div>
-    <div style="margin-top:10px"><button onclick="checkout()">Оформить заказ</button></div>
-  </div>
-
-</main>
-
 <script>
-  // Products dataset
-  const PRODUCTS = {
-    shoes:[{id:'sh1',name:'Raven Boots',price:'140$',desc:'Кожаные ботинки ручной работы.'},{id:'sh2',name:'Obsidian High',price:'160$',desc:'Платформенные сапоги.'}],
-    tops:[{id:'t1',name:'Sanctum Jacket',price:'180$',desc:'Куртка с латунными пуговицами.'},{id:'t2',name:'Midnight Tee',price:'60$',desc:'Футболка плотного кроя.'}],
-    accessories:[{id:'a1',name:'Coven Pendant',price:'70$',desc:'Подвеска ручной работы.'},{id:'a2',name:'Sigil Belt',price:'45$',desc:'Кожаный пояс с пряжкой.'}],
-    pants:[{id:'p1',name:'Ash Trousers',price:'85$',desc:'Классические брюки.'},{id:'p2',name:'Gothic Cargo',price:'95$',desc:'Карго-штаны.'}]
-  };
+const buttons = document.querySelectorAll('.panel-btn');
+const mainScreen = document.getElementById('main-screen');
 
-  // Cart storage
-  const CART = [];
-  let currentProduct = null;
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const content = btn.dataset.content;
 
-  // Utility: safe element getter
-  function $id(id){ return document.getElementById(id); }
+    // Получаем координаты кнопки на панели
+    const rect = btn.getBoundingClientRect();
+    const startX = rect.left;
+    const startY = rect.top;
 
-  // Toggle side panel
-  function togglePanel(){ const sp = $id('sidePanel'); if(!sp) return; sp.classList.toggle('open'); }
+    // Создаем элемент на главном экране
+    const el = document.createElement('div');
+    el.textContent = content;
+    el.classList.add('main-item');
+    el.style.left = startX + 'px';
+    el.style.top = startY + 'px';
+    mainScreen.appendChild(el);
 
-  // Close side panel
-  function closePanel(){ const sp = $id('sidePanel'); if(sp) sp.classList.remove('open'); }
+    // Вычисляем случайную позицию на главном экране
+    const endX = Math.random() * (window.innerWidth - 150);
+    const endY = Math.random() * (window.innerHeight - 50);
 
-  // Navigation wrapper: ensures no error if id missing
-  function navigateTo(id){
-    // Close side panel on navigation
-    closePanel();
-    showSection(id);
-  }
+    // Анимация перемещения от кнопки к экрану
+    setTimeout(() => {
+      el.style.left = endX + 'px';
+      el.style.top = endY + 'px';
+      el.style.opacity = 1;
+      el.style.transform = 'scale(1)';
+    }, 50);
 
-  // Robust showSection: hides all main sections, shows target if exists
-  function showSection(id){
-    // Hide all sections inside <main>
-    document.querySelectorAll('main > section').forEach(s=> s.style.display = 'none');
-
-    // Hide productScreen and products specifically as they may be outside main > section in some setups
-    const extras = ['productScreen','products'];
-    extras.forEach(e => { const el = $id(e); if(el) el.style.display = 'none'; });
-
-    // Manage hero visibility
-    const hero = $id('hero'); if(hero) hero.style.display = (id === 'categories') ? 'block' : 'none';
-
-    // Show target if exists
-    const target = $id(id);
-    if(target){
-      // If it's a section (or any element) show it
-      target.style.display = 'block';
-      // If target is products section, ensure .products class gets proper handling
-      if(id === 'products') target.classList.add('active'); else if(target.classList.contains('products')) target.classList.remove('active');
-    } else {
-      console.warn(`showSection: element with id="${id}" not found. Defaulting to categories.`);
-      const fallback = $id('categories'); if(fallback) fallback.style.display = 'grid';
-    }
-  }
-
-  // Open category and populate products list
-  function openCategory(cat){
-    const list = $id('products-list'); if(!list) return;
-    list.innerHTML = '';
-    const items = PRODUCTS[cat] || [];
-    items.forEach(p => {
-      const el = document.createElement('div'); el.className = 'prod';
-      el.innerHTML = `<h4>${escapeHtml(p.name)}</h4><div class="price">${escapeHtml(p.price)}</div><div style="color:var(--muted);font-size:13px">${escapeHtml(p.desc)}</div><div style="margin-top:8px"><button onclick="viewProduct('${cat}','${p.id}')">Подробнее</button> <button onclick="addToCartById('${cat}','${p.id}')">Купить</button></div>`;
-      list.appendChild(el);
-    });
-    // set title
-    const title = $id('products-title'); if(title) title.innerText = (cat==='tops'?'Верхняя одежда':capitalize(cat)) + ' — Коллекция';
-    showSection('products');
-  }
-
-  // View product detail
-  function viewProduct(cat,id){
-    const prod = (PRODUCTS[cat] || []).find(x => x.id === id);
-    if(!prod){ alert('Товар не найден'); return; }
-    currentProduct = prod;
-    $id('ps-title').innerText = prod.name;
-    $id('ps-desc').innerText = prod.desc || '';
-    $id('ps-price').innerText = prod.price || '';
-    // show product screen
-    showSection('productScreen');
-  }
-
-  // Add to cart utilities
-  function addToCartById(cat,id){ const prod = (PRODUCTS[cat] || []).find(x=>x.id===id); if(!prod){ alert('Товар не найден'); return; } CART.push(Object.assign({qty:1}, prod)); updateCartUI(); alert('Добавлено в корзину'); }
-  function addToCart(prod){ if(!prod){ alert('Нет выбранного товара'); return; } CART.push(Object.assign({qty:1}, prod)); updateCartUI(); alert('Добавлено в корзину'); }
-
-  function updateCartUI(){
-    const panel = $id('cartItems'); if(!panel) return;
-    panel.innerHTML = '';
-    if(CART.length === 0){ panel.innerHTML = '<div style="color:var(--muted)">Корзина пуста</div>'; return; }
-    CART.forEach(item => {
-      const row = document.createElement('div'); row.className = 'cart-item';
-      row.innerHTML = `<div>${escapeHtml(item.name)} x${item.qty}</div><div>${escapeHtml(item.price)}</div>`;
-      panel.appendChild(row);
-    });
-  }
-
-  function showCart(){ const cp = $id('cartPanel'); if(cp){ cp.classList.add('open'); cp.style.display = 'block'; updateCartUI(); } }
-  function closeCart(){ const cp = $id('cartPanel'); if(cp){ cp.classList.remove('open'); cp.style.display = 'none'; } }
-  function checkout(){ if(CART.length===0){ alert('Корзина пуста'); return; } // send order to bot or copy to clipboard
-    const order = { items: CART, ts: new Date().toISOString() };
-    if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.sendData === 'function'){
-      Telegram.WebApp.sendData(JSON.stringify(order)); alert('Заказ отправлен боту'); CART.length=0; updateCartUI(); closeCart();
-    } else {
-      try{ navigator.clipboard.writeText(JSON.stringify(order)); alert('Заказ скопирован в буфер'); CART.length=0; updateCartUI(); closeCart(); }catch(e){ alert('Не удалось оформить заказ'); }
-    }
-  }
-
-  // helpers
-  function capitalize(s){ return s && typeof s==='string' ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
-  function escapeHtml(text){ if(!text && text!==0) return ''; return String(text).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-
-  // Init: show categories safely
-  document.addEventListener('DOMContentLoaded', ()=>{ showSection('categories'); });
-
+    // Автоудаление через 10 секунд
+    setTimeout(() => {
+      el.style.opacity = 0;
+      el.style.transform = 'scale(0.5)';
+      setTimeout(() => mainScreen.removeChild(el), 600);
+    }, 10000);
+  });
+});
 </script>
+
 </body>
 </html>
